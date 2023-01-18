@@ -1,0 +1,16 @@
+{% macro displayField(fieldName) %}
+<div>
+    {{fieldName.label(class="form-control-label")}}
+    <!-- errors check -->
+    {% if fieldName.errors %}
+        {{ fieldName(class="form-control form-control-lg is-invalid",**kwargs) }}
+        <div class="invalid-feedback">
+            {% for error in fieldName.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+        </div>
+    {% else %}
+        {{ fieldName(class="form-control form-control-lg",**kwargs) }}
+    {% endif %}
+</div>
+{% endmacro %}
