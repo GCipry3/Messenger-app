@@ -1,0 +1,16 @@
+{% from 'form_helper.html' import displayField %}
+{% extends "prelogin-layout.html" %}
+
+{% block title %}Log In{% endblock %}
+{% block content %}
+<form action="{{url_for('login')}}" method="POST">
+    {{form.hidden_tag()}}
+
+    {{displayField(form.username,autocomplte="off",autofocus=true)}}
+    {{displayField(form.password)}}
+
+    <div>
+        {{form.submit(class="btn btn-primary")}}
+    </div>
+</form>
+{% endblock %}
