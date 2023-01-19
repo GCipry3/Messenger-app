@@ -7,10 +7,10 @@ from flask_login import LoginManager, login_user, current_user, logout_user, log
 # Configure app
 app = Flask(__name__)
 app.secret_key = 'super secret key'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://GCipry3:RsjHGvmh40DM@ep-square-math-535766.eu-central-1.aws.neon.tech/neondb'
 
 
 # Configure database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://GCipry3:RsjHGvmh40DM@ep-square-math-535766.eu-central-1.aws.neon.tech/neondb'
 db = SQLAlchemy(app)
 
 
@@ -19,8 +19,13 @@ bcrypt = Bcrypt(app)
 
 
 # Login manager
-login_manager = LoginManager()
+login_manager = LoginManager(app)
+login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(id):
+    return User.query.get(int(id))
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -28,10 +33,10 @@ def index():
     if current_user.is_authenticated:
         return redirect(url_for('chat'))
 
-    reg_form = RegistrationForm()
-    if reg_form.validate_on_submit():
-        username = reg_form.username.data
-        password = reg_form.password.data
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
 
         # Hash password
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -44,30 +49,44 @@ def index():
         flash(f'You have successfully registered.','success')
         return redirect(url_for('login'))
 
-    return render_template('index.html',form = reg_form)
+    return render_template('index.html',form = form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    login_form = LoginForm()
+    if current_user.is_authenticated:
+        return redirect(url_for('chat'))
 
-    if login_form.validate_on_submit():
-        user_object = User.query.filter_by(username=login_form.username.data).first()
+    form = LoginForm()
+
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        check_password = bcrypt.check_password_hash(user.password, form.password.data)
         
-        if user_object and bcrypt.check_password_hash(user_object.password, login_form.password.data):
+        if user and check_password:
             flash('Logged in successfully.', 'success')
+            login_user(user)
             return redirect(url_for('chat'))
 
         flash('Invalid username or password.', 'danger')
         return redirect(url_for('login'))
     
-    return render_template('login.html', form=login_form)
+    return render_template('login.html', form=form)
 
 
 
 @app.route('/chat', methods=['GET', 'POST'])
+@login_required
 def chat():
     return "Chat"
+
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('login'))
+
 
 if __name__ == '__main__':
     app.run(debug=True,port=5000)
