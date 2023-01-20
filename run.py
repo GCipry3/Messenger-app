@@ -1,13 +1,20 @@
+from time import localtime, strftime
 from flask import Flask, render_template, request, redirect, url_for, session , flash
 from wtform_fields import *
 from models import *
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
+from flask_socketio import SocketIO, send, emit, join_room, leave_room
 
-# Configure apprttttttttttttttttttttttttttt1111111111111111111111111111111111111111111111111111ffffffffffffg
+
+# Configure application
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://GCipry3:RsjHGvmh40DM@ep-square-math-535766.eu-central-1.aws.neon.tech/neondb'
 app.config['SECRET_KEY'] = 'super secret key' 
+
+# Configure socketio
+socketio = SocketIO(app)
+ROOMS = ["lounge", "news", "games", "coding"]
 
 # Configure bcrypt
 bcrypt = Bcrypt(app)
@@ -15,7 +22,7 @@ bcrypt = Bcrypt(app)
 # Configure database
 db = SQLAlchemy(app)
 
-# Login manager
+# Configure login manager
 login_manager = LoginManager(app)
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -75,7 +82,8 @@ def login():
 @app.route('/chat', methods=['GET', 'POST'])
 @login_required
 def chat():
-    return "Chat"
+    return render_template('chat.html',username=current_user.username, 
+                           rooms=ROOMS)
 
 
 @app.route('/logout', methods=['GET'])
@@ -85,5 +93,35 @@ def logout():
     return redirect(url_for('login'))
 
 
+@socketio.on('message')
+def message(data):
+    print(f"\n\n{data}\n\n")
+    send({
+            'msg':data['msg'],
+            'username':data['username'],
+            'time_stamp':strftime('%b-%d %I:%M%p', localtime()),
+        }, 
+        room=data['room']
+    )
+
+
+@socketio.on('join')
+def join(data):
+    join_room(data['room'])
+    send(
+        {'msg':data['username'] + " has joined the " + data['room'] + " room."},
+        room=data['room']
+    )
+    
+@socketio.on('leave')
+def leave(data):
+    leave_room(data['room'])
+    send(
+        {'msg':data['username'] + " has left the " + data['room'] + " room."},
+        room=data['room']
+    )
+    
+
+
 if __name__ == '__main__':
-    app.run(debug=True,port=5000)
+    socketio.run(debug=True,port=5000)
