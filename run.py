@@ -14,7 +14,7 @@ app.config['SECRET_KEY'] = 'super secret key'
 
 # Configure socketio
 socketio = SocketIO(app)
-ROOMS = ["lounge", "news", "games", "coding"]
+ROOMS = ["global", "games", "coding", "random"]
 
 # Configure bcrypt
 bcrypt = Bcrypt(app)
@@ -124,4 +124,4 @@ def leave(data):
 
 
 if __name__ == '__main__':
-    socketio.run(debug=True,port=5000)
+    socketio.run(app=app, debug=True)

@@ -32,9 +32,9 @@
         </div>
 
         <!-- Chat section -->
-        <div id="rightside-pannel" class="flex-row" class="ps-3" style="height:100%;overflow:hi">
+        <div id="rightside-pannel" class="flex-row" class="ps-3" style="height:100%;overflow:hidden">
             <!-- Display messages -->
-            <div id="display-message-section" class="card flex-column" style="height:95%;">
+            <div id="display-message-section" class="card flex-column" >
                 <!-- Display error messages -->
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
@@ -50,10 +50,9 @@
             </div>
 
             <!-- Input area -->
-            <div id="input-area" class="card flex-row" style="height:5%">
-                <input type="text" id="user_message" 
-                palceholder="Type here..." style="height:100%;width:90%">
-                <button type="btn btn-secondary" id="send_message" style="height:100%;width:10%">Send</button>
+            <div id="input-area" class="card flex-row">
+                <input type="text" id="user_message" palceholder="Type here...">
+                <button type="btn btn-secondary" id="send_message">Send</button>
             </div>
         </div>
     </div>
