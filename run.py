@@ -4,19 +4,16 @@ from models import *
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, current_user, logout_user, login_required
 
-# Configure app
+# Configure apprttttttttttttttttttttttttttt1111111111111111111111111111111111111111111111111111ffffffffffffg
 app = Flask(__name__)
-app.secret_key = 'super secret key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://GCipry3:RsjHGvmh40DM@ep-square-math-535766.eu-central-1.aws.neon.tech/neondb'
-
-
-# Configure database
-db = SQLAlchemy(app)
-
+app.config['SECRET_KEY'] = 'super secret key' 
 
 # Configure bcrypt
 bcrypt = Bcrypt(app)
 
+# Configure database
+db = SQLAlchemy(app)
 
 # Login manager
 login_manager = LoginManager(app)
