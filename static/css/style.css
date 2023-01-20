@@ -1,0 +1,15 @@
+body{
+    background: #fafafa;
+}
+
+.site-header .navbar-nav .nav-link {
+    color: #cbd5db;
+}
+
+.bg-steel {
+    background-color: #16573c;
+}
+
+a.nav-item.nav-link {
+    color: #cbd5db;
+}

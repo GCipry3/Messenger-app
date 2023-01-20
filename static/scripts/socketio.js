@@ -7,13 +7,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const p = document.createElement('p');
         const br = document.createElement('br');
         if (data.username) {
-            const span_username = document.createElement('span');
+            // Create a container 
+            const container = document.createElement('div');
+            container.className = 'container';
+
             const span_timestamp = document.createElement('span');
+            span_timestamp.innerHTML = "(" + data.time_stamp + ")";
+            container.append(span_timestamp);
+
+            const span_username = document.createElement('span');
+            span_username.style.color = '#16573c';
             span_username.innerHTML = data.username;
-            span_timestamp.innerHTML = data.time_stamp
-            p.innerHTML = span_username.outerHTML + br.outerHTML + data.msg
-                + br.outerHTML + span_timestamp.outerHTML;
-            document.querySelector('#display-message-section').append(p);
+            container.append(span_username);
+
+            const span_message = document.createElement('span');
+            span_message.style.fontSize = '20px';
+            span_message.innerHTML = ": "+data.msg;
+            container.append(span_message);
+
+            document.querySelector('#display-message-section').append(container);
         } else {
             printSysMsg(data.msg);
         }
@@ -58,9 +70,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Print system message
     function printSysMsg(msg) {
-        const p = document.createElement('p');
-        p.innerHTML = msg;
-        document.querySelector('#display-message-section').append(p);
+        const container = document.createElement('div');
+        container.className = 'container';
+
+        const span_message = document.createElement('span');
+        span_message.style.color = 'red';
+        span_message.innerHTML = msg;
+        container.append(span_message);
+
+        document.querySelector('#display-message-section').append(container);
     }
 
 })
